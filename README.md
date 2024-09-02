@@ -27,27 +27,31 @@ Different classification models are compared regarding their performance in pred
 
 
 ## 5. Best result 
+...
 
 ## 6. Ideas
+...
 
-# Set up the virtual environment
+
+# How to set up the virtual environment
+
+-   The following examples are based on the assumption that you have installed [pyenv](https://github.com/pyenv-win/pyenv?tab=readme-ov-file) to handle different python versions. 
+-   Create the virtual environment and install the required packages by running following commands for [macOS](#for-macos) or [windowsOS](#for-windowsos).
 
 ## For **`macOS`**: 
 
--   Install the virtual environment and the required packages by running following commands.
-
 ### Option A
--   Make the setup using the [Makefile](Makefile):
 
-     ```BASH
-    make setup
-    ```
--   After that active your environment:
+-   Create the virtual environment using a [Makefile](Makefile) and activate it with the following commands
+
     ```BASH
+    make setup
     source .venv/bin/activate
     ```
+
 ### Option B
-- Create and activatethe virtual environment with the following commands:
+
+- Create and activate the virtual environment with the following commands
 
     ```BASH
     pyenv local 3.11.3
@@ -59,35 +63,39 @@ Different classification models are compared regarding their performance in pred
     
 ## For **`WindowsOS`**:
 
-- Install the virtual environment and the required packages by running following commands.
+- Here is a helpful guide on how to install [pyenv for windows](https://pyenv-win.github.io/pyenv-win/)
 
 ### Option A
 
 -   For `PowerShell` CLI
 
-```PowerShell
-pyenv local 3.11.3
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+    ```PowerShell
+    pyenv local 3.11.3
+    python -m venv .venv
+    .venv\Scripts\Activate.ps1
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
 
 ### Option B
 
 -   B For `Git-bash` CLI
   
-```BASH
-pyenv local 3.11.3
-python -m venv .venv
-source .venv/Scripts/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+    ```BASH
+    pyenv local 3.11.3
+    python -m venv .venv
+    source .venv/Scripts/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
 
-## **`Note:`**
-If you encounter an error when trying to run `pip install --upgrade pip`, try using the following command:
-```Bash
-python.exe -m pip install --upgrade pip
-```
+## **`Notes`:**
+- If you encounter an error when trying to run `pip install --upgrade pip`, try:
+    ```BASH
+    python.exe -m pip install --upgrade pip
+    ```
+
+
+- Check installed packages (and versions) with `pip freeze` or  `pip list`
+
 
