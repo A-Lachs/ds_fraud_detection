@@ -10,7 +10,7 @@ The data is provided by the company STEG (société tunisienne d'électricité e
 
 For the data source and description please take a look at the [data description](data/data_description.md).
 
-[insert pie chart for fraud ]
+![pie chart for fraud](Images/pie_plot_fraud_rate.png)
 
 ## 3. EDA
 
