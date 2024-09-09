@@ -243,3 +243,5 @@ def subplopts_fraud_per_category(your_df:pd.DataFrame,
             print(f'{fraud_risk_levels[i]}: {j}')
 
     return grouped_df, fraud_risk_categories
+
+
