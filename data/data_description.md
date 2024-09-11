@@ -25,9 +25,9 @@ In the exploratory data analysis ([EDA](../EDA/EDA_summary.md)) the variables fr
 | --- | ----------- |---|
 | Client_id || Unique identifier for client |
 | Invoice_date || Date of issue of the invoice relating to a given quarter due date for a client |
-| Tarif_type |10, 11, 12, 13, 14, 15, 21, 24, 29, 9, 30, 40, 45, None| Type of way a client is charged for its electricity and gas copnsumption by the company STEG; each type is associated to a unique number|
+| Tarif_type |10, 11, 12, 13, 14, 15, 21, 24, 29, 9, 30, 40, 45, None| Type of tarif determines how a client is charged for electricity and gas copnsumption by the company STEG|
 | Counter_number || Serial number identifing the counter materialized by a series of numbers written on the counting device and unique for each client|
-| Counter_statue || Working status of the device measuring the amount of energy consumed by a client, ranging from 1 to 5 (check together the values in that column?)|
+| Counter_statue |0, 1, 2, 3, 4, 5, 269375, 618| Working status of the device measuring the amount of energy consumed by a client|
 | Counter_code || Registration number identifing the device made up of three digits located within the serial number of the meter |
 | Counter_coefficient || Coefficient used to convert the raw meter readings from the meter into actual consumption values |
 | Consommation_level_1 || Energy consumption is less than 2.400 kwh per year <br> at the  [cost of 181 millimes per kwh](https://kapitalis.com/tunisie/2022/05/12/tunisie-les-nouveaux-tarifs-de-la-steg/) |
