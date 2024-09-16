@@ -12,7 +12,7 @@ In the exploratory data analysis ([EDA](../EDA/EDA_summary.md)) the variables fr
 
 | Column name | Column values| Description |
 | --- | ----------- |---|
-| Client_id || Unique identifier for client |
+| Client_id | 135493 unique values| Unique identifier for client |
 | District |60, 62, 63, 69| District number associated to the location of a client ||
 | Client_catg |11, 12, 51| Category the client belongs to|
 | Region |101, 103, 104, 105, 106, 107, 199, 206, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 371, 372, 379, 399| Region number associated to the location of a client|
@@ -23,18 +23,18 @@ In the exploratory data analysis ([EDA](../EDA/EDA_summary.md)) the variables fr
 
 | Column name | Column values| Description |
 | --- | ----------- |---|
-| Client_id || Unique identifier for client |
+| Client_id |135493 unique values | Unique identifier for client |
 | Invoice_date || Date of issue of the invoice relating to a given quarter due date for a client |
 | Tarif_type |10, 11, 12, 13, 14, 15, 21, 24, 29, 9, 30, 40, 45, None| Type of tarif determines how a client is charged for electricity and gas copnsumption by the company STEG|
-| Counter_number || Serial number identifing the counter materialized by a series of numbers written on the counting device and unique for each client|
+| Counter_number | 201893 unique values| Serial number identifing the counter materialized by a series of numbers written on the counting device |
 | Counter_statue |0, 1, 2, 3, 4, 5, 269375, 618| Working status of the device measuring the amount of energy consumed by a client|
-| Counter_code || Registration number identifing the device made up of three digits located within the serial number of the meter |
-| Counter_coefficient || Coefficient used to convert the raw meter readings from the meter into actual consumption values |
+| Counter_code | 40 different numbers | Registration number identifing the device made up of three digits located within the serial number of the meter |
+| Counter_coefficient | 1, 2, 3, 6, 20, 30, 40, 50 | Coefficient used to convert the raw meter readings from the meter into actual consumption values |
 | Consommation_level_1 || Energy consumption is less than 2.400 kwh per year <br> at the  [cost of 181 millimes per kwh](https://kapitalis.com/tunisie/2022/05/12/tunisie-les-nouveaux-tarifs-de-la-steg/) |
 | Consommation_level_2 || Energy consumption is between 2.401 and 3.600 kwh per year <br> at the [cost of 223 millimes per kwh](https://kapitalis.com/tunisie/2022/05/12/tunisie-les-nouveaux-tarifs-de-la-steg/) |
 | Consommation_level_3 || Energy consumpution is between 3.601 et 6.000 kwh per year <br> at the [cost of 338 millimes per kwh](https://kapitalis.com/tunisie/2022/05/12/tunisie-les-nouveaux-tarifs-de-la-steg/) |
 | Consommation_level_4 || Energy consumption exceeds 6.000 kWh per year <br> at the [cost of 419 millimes per kwh](https://kapitalis.com/tunisie/2022/05/12/tunisie-les-nouveaux-tarifs-de-la-steg/) |
 | Old_index || Old counter meter reading |
 | New_index || New counter meter reading |
-| Months_number |1 to 12| Number of the month  |
+| Months_number |1370 unique values including numbers 1-12| Number of the month (?) |
 | Counter_type |'ELEC', 'GAZ'| Type of device measuring the amount of energy consumed <br> 'ELEC' = electricity consumption <br> 'GAZ' =  gas consumption|
