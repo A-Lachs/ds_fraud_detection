@@ -55,6 +55,26 @@ def add_feature_to_list(feature_name: str | list, feature_list: list) -> list:
     return feature_list
 
 
+def extract_account_duration(df_by_counter_type: pd.DataFrame, prefix='')-> pd.DataFrame:
+    """ From a DF with the columns 'client_id' and 'invoice_date' extract 
+        the duration in days between first and last date from 'invoice_date'. 
+        Return DF with new column prefix + '_acc_dur_days' with account duration in days.
+
+    Args:
+        df_by_counter_type (pd.DataFrame):  DF wih columns 'client_id' and 'invoice_date'.
+        prefix (str, optional):             Prefix for the new column 'acc_dur_days'. 
+                                            Defaults to '' + '_acc_dur_days.
+
+    Returns:
+        pd.DataFrame:   DF with columns client_id' and 'invoice_date' and prefix + '_acc_dur_days.
+    """
+    df_time_diff = df_by_counter_type.sort_values('invoice_date').groupby('client_id', as_index=False, observed=True)['invoice_date'].agg(['first','last']) 
+    df_time_diff[f'{prefix}_acc_dur_days'] = df_time_diff['last'] - df_time_diff['first']
+    df_time_diff.drop(['first', 'last'], axis=1, inplace=True)
+
+    return df_time_diff
+
+
 ##################################
 #### Create fraud_risk feature ###  - with 3 categories (low, normal, high)
 ##################################
