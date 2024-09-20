@@ -245,3 +245,72 @@ def subplopts_fraud_per_category(your_df:pd.DataFrame,
     return grouped_df, fraud_risk_categories
 
 
+#######################################
+### Boxplots for energy consumption ###
+#######################################
+
+
+def boxplot_consumption_per_level(data:pd.DataFrame, energy_type: str, feature: str, show_outliers=True):
+    """ Create boxplots to display energy consumption grouped by target (fraud, no fraud) 
+        and with a subplot for each level 1 to 4. 
+    
+    Args:
+        data (pd.DataFrame):    DF with aggregated energy consumption by client, 
+                                energy_type ('elec', 'gas'), feature ('mean', 'std', 'max_min_range') and for each level 1 to 4.
+        energy_type (str):      Energy type has to be any of 'elec' or 'gas'
+        feature (str):          The aggregated energy consumption feature, e.g. 'mean', 'std', 'max_min_range'.
+        show_outliers (bool):   Defaults to True to show ouliers in boxplots, 
+                                When False it will not display outliers in boxplots. 
+
+    """
+
+    # energy type has to be chosen from 'elec' or 'gas'
+    if energy_type == 'elec':
+        consumption_label = 'electricity'
+    elif energy_type == 'gas':
+        consumption_label = energy_type
+    else:
+        return f'Type is not any of "elec" or "gas"'
+    
+    if show_outliers == False:
+        title_info = '(outliers not displayed)'
+    elif show_outliers == True:
+         title_info = ''
+
+    # build plot 
+
+    fig, axes = plt.subplots(1, 4, figsize=(10,5), sharey=True)
+    fig.suptitle(f'\n{consumption_label.title()} consumption by level {title_info}', fontsize=16, verticalalignment='center')
+
+    for subplot in range(0,4):
+        sns.boxplot(ax=axes[subplot], 
+                    data=data, y=f'{energy_type}_{subplot + 1}_{feature}', 
+                    hue='target', palette=[COLOR_1, RED_COLORS[1]], 
+                    gap=0.2, width=.5, linewidth=1.5, notch=True,
+                    showfliers=show_outliers,
+                    )
+        
+        axes[subplot].set_title(f' Level {subplot +1 }', fontsize=9)
+        axes[subplot].legend([],[], frameon=False)  # remove legend
+        axes[subplot].set_xticks([])                # remove xticks
+
+        if subplot == 0:
+            axes[subplot].set_ylabel(f'{consumption_label.title()} consumption [kWh]')
+        else:
+            axes[subplot].set_ylabel('') 
+
+        if subplot == 3: # add custom legend to last subplot (and dont' forget to adjust plt.tight_layout() accortdingly!)
+            legend_handles, _= axes[subplot].get_legend_handles_labels()
+            axes[subplot].legend(legend_handles, ['normal (left)', 'fraud (right)'])
+            sns.move_legend(axes[subplot], 
+                            title='', 
+                            bbox_to_anchor=(1, 1.25), 
+                            loc='upper right')  # remove label title
+        
+    plt.tight_layout(rect=[0, 0.03, 1, 1.15]) 
+    # tight_layout only considers ticklabels, axis labels, and titles
+    # adjustment with [left bottom, right, top] in normalized (0,1) space
+    # increase top value to reduce space between top figures and suptitle (that is created when customizing the legend)
+    
+    plt.show()
+    return
