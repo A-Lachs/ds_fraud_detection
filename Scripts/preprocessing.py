@@ -6,6 +6,16 @@
 import pandas as pd
 
 
+# create custom  range function with name in namespace
+
+def max_min_range(x) -> float:
+    return x.max() - x.min()
+
+max_min_range.__name__ = 'max_min_range'
+
+
+# change dtype of DF column
+
 def convert_column_type(df_data: pd.DataFrame, columns: list | str, to_type) -> pd.DataFrame:
     """ Convert data types of column(s) in a dataframe.
 
@@ -281,14 +291,6 @@ def create_mode_and_count_feature(invoice_data: pd.DataFrame, feature: str, rena
 
 # it uses the calculate_energy_consumption() function and
 # the columns_exist() function from this section 
-
-# create custom  range function with name in namespace
-
-def max_min_range(x) -> float:
-    return x.max() - x.min()
-
-max_min_range.__name__ = 'max_min_range'
-
 
 def calculate_energy_consumption(data: pd.DataFrame, energy_type: str, consumption_level: int, monthly: bool
                                  ) -> pd.DataFrame:
