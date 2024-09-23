@@ -19,6 +19,12 @@ COLOR_1 = 'steelblue'
 COLOR_2 =  '#E42A38'
 RED_COLORS = ['#e3868d', '#E42A38', '#8a010b']  # bright, middle, dark
 
+# create custom  range function with name in namespace
+def max_min_range(x) -> float:
+    return x.max() - x.min()
+
+max_min_range.__name__ = 'max_min_range'
+
 
 ################
 ### pie plot ### - used to show the fraud rate 
