@@ -1,4 +1,7 @@
+############################################################################
 ### collection of functions used for preprocessing & feature engineering ###
+############################################################################
+
 
 import pandas as pd
 
@@ -23,7 +26,7 @@ def convert_column_type(df_data: pd.DataFrame, columns: list | str, to_type) -> 
     return df_data
 
 
-# the add_feature:to_list() function is used to keep track of features used for modelling
+# the add_feature_to_list() function is used to keep track of features used for modelling 
 
 def add_feature_to_list(feature_name: str | list, feature_list: list) -> list:
     
@@ -53,6 +56,11 @@ def add_feature_to_list(feature_name: str | list, feature_list: list) -> list:
         raise TypeError(f"Invalid feature type: {type(feature_name).__name__}. 'feature_name' must be a str or list of strings.")
     
     return feature_list
+
+
+#######################################
+### Create account duration feature ### from the client's invoice data
+#######################################
 
 
 def extract_account_duration(df_by_counter_type: pd.DataFrame, prefix='')-> pd.DataFrame:
@@ -148,12 +156,13 @@ def create_fraud_risk_feature(data_frame: pd.DataFrame,
     return data_frame
 
 
-########################################
-### Create mode and count feature    ### of invoice data (clientwise aggregation)
-########################################
+#####################################
+### Create mode and count feature ### of categorical variables from the invoice data (clientwise aggregation)
+#####################################
 
 # Main function: create_mode_and_count_feature()
-# Contains sub functions to create a mode and count feature of a categorical variable for each client_id and merge them in a df
+# Contains sub functions to create a mode and count feature of a categorical variable 
+# for each client_id and merge them in a df
 
 
 def create_mode_feature(invoice_data: pd.DataFrame, feature: str, renamed_feature=None) -> pd.DataFrame:
@@ -260,3 +269,141 @@ def create_mode_and_count_feature(invoice_data: pd.DataFrame, feature: str, rena
     feature_df = merge_features(feature_mode, feature_count)
     
     return feature_df
+
+
+#############################################
+### Calculate energy consumption features ###  - clientwise aggregation
+#############################################
+
+# the wrapper function add_consumption_features() is used to calculate 
+# the consumption features of each client for each level 1 to 4 
+# and add them to the main_df
+
+# it uses the calculate_energy_consumption() function and
+# the columns_exist() function from this section 
+
+# create custom  range function with name in namespace
+
+def max_min_range(x) -> float:
+    return x.max() - x.min()
+
+max_min_range.__name__ = 'max_min_range'
+
+
+def calculate_energy_consumption(data: pd.DataFrame, energy_type: str, consumption_level: int, monthly: bool
+                                 ) -> pd.DataFrame:
+    """ Form the client's invoice data calculate the client's mean (std, max_min_range) consumption 
+        for a specific energy type (electricity or gas) and a consumption level (1, 2, 3 or 4) 
+        either over all months or for each month seperately (depending on bool 'monthly').
+
+    Args:
+        data (pd.DataFrame):        DF with columns 'client_id' and 'invoice_month'.
+        energy_type (str):          Can be 'elec' or 'gas'.
+        consumption_level (int):    Can be level 1, 2, 3 or 4.
+        monthly (bool, optional):   If True aggregate the data by month.
+                                    If False aggregate the data over all months.  
+
+    Returns:
+        pd.DataFrame:   DF aggregated by client (rows) with (mean, std, max_min_range) columns 
+                        for a specific energy type and level. 
+                        Optionally columns for each month.
+    """
+    
+    # create dict with the aggregation methods (operations) 
+    operations = ['mean', 'std', max_min_range]  
+    aggregations = {}
+    aggregations[f'consumption_lvl_{consumption_level}'] = operations
+
+    # example:
+    # df.groupby('group').agg({'a':['sum', 'max'], 
+    #                         'b':'mean', 
+    #                         'c':'sum', 
+    #                         'd': max_min_range})
+
+    if monthly:
+        # observed=False is used for categorical variables, includes all categories (even when not observed)
+        agg_data = data.groupby(['client_id','invoice_month'], observed=False, dropna=False).agg(aggregations)
+        
+        # reshape df
+        #agg_data = agg_data.stack(level=0, future_stack=True).reset_index()
+        agg_data = agg_data.stack(level=0).reset_index()
+        agg_data.drop(['level_2'], axis=1, inplace=True)
+        agg_data = agg_data.pivot(index='client_id', columns=['invoice_month'])
+        
+        # reduce multiindex using map and reset index
+        agg_data.columns = agg_data.columns.map(lambda s: '_'.join(map(str, s)))
+        agg_data = agg_data.reset_index()
+        
+        # rename columns
+        agg_data.set_index('client_id', inplace=True)
+        agg_data.columns = [f'{energy_type}_{consumption_level}_mon_{column.split("_")[1]}_{column.split("_")[0]}' 
+                            if len(column.split("_")) == 2 
+                            else f'{energy_type}_{consumption_level}_mon_{column.split("_")[3]}_{column.split("_")[0]}_{column.split("_")[1]}_{column.split("_")[2]}'
+                            for column in agg_data.columns
+                            ]
+        agg_data = agg_data.reset_index()
+
+    else: 
+        agg_data = data.groupby(['client_id'], observed=False, dropna=False).agg(aggregations)
+        
+        # reshape df
+        #agg_data= agg_data.stack(level=0, future_stack=True).reset_index()
+        agg_data= agg_data.stack(level=0).reset_index()
+        agg_data.drop(['level_1'], axis=1, inplace=True)
+        
+        # rename colums
+        for operation in operations:
+            if callable(operation): # get the operation name as str
+                operation = operation.__name__
+            agg_data.rename(columns={f'{operation}': f'{energy_type}_{consumption_level}_{operation}'}, inplace=True)
+       
+    return agg_data
+
+
+# (wrapper) functions used to calculate and add new features to the df
+
+
+def columns_exist(original_df: pd.DataFrame, new_df: pd.DataFrame) -> bool:
+    """ Returns True if all columns of the new_df already exist in the original_df,
+        otherwise False.
+    """
+    target_list = list(original_df.columns)
+    test_list = list(new_df.columns)
+    return all( element in target_list for element in test_list)
+
+
+def add_consumption_features(to_df: pd.DataFrame, data: pd.DataFrame, energy_type: str, monthly: bool
+                             ) -> pd.DataFrame:
+    """ Wrapper function: 
+        1) Aggregate consumption features by column 'client_id' with calculate_enery_consumption() function 
+        2) Add the new consumption features to main DF 'to_df' 
+            - only if they do not already exist, otherwise update them
+            - main DF has to have to column 'client_id' too
+        
+        Do this for all consumption levels 1 to 4.
+
+    Args:
+        to_df (pd.DataFrame):   main DF with column 'client_id' to which new feature will be added
+        data (pd.DataFrame):    feature DF with consumption features  aggregated by column 'client_id' 
+        energy_type (str):      Can be 'elec' or 'gas'.
+        monthly (bool):         If True aggregate the data by month.
+                                If False aggregate the data over all months.
+
+    Returns:
+        pd.DataFrame:           Main DF with consumption features added or udated.  
+    """
+
+    # calculate and add aggregated consumption features to 'to_df'
+    
+    for level in range(1,5):
+        # aggregate energy consumption features by client_id
+        aggregated_features = calculate_energy_consumption(data, energy_type, level, monthly) 
+
+        if not columns_exist(to_df, aggregated_features):
+            # add aggregated features to to_df
+            to_df = pd.merge(to_df, aggregated_features, on='client_id', how='outer')
+        else:
+            # update existing features in to_df 
+            to_df.update(aggregated_features)
+
+    return to_df
